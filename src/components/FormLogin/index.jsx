@@ -5,8 +5,10 @@ import { Form, FormActions } from "../Form";
 import { FormLabel } from "../FormLabel";
 import { TextField } from "../TextField";
 import { Figure, Heading, Image } from "./styles";
+import PropTypes from 'prop-types';
+import http from "../../http";
 
-export const FormLogin = () => {
+export const FormLogin = ({ onLogin }) => {
     const [credentials, setCredentials] = useState({ email: '', password: '' });
 
     const handleChange = (e) => {
@@ -19,7 +21,14 @@ export const FormLogin = () => {
 
     const loginUser = (evt) => {
         evt.preventDefault();
-        console.log(credentials);
+        http.post('/auth/token', credentials)
+            .then(response => {
+                console.log(response.data)
+                onLogin()
+            })
+            .catch(err => {
+                console.error(err)
+            })
     };
 
     return (
@@ -65,4 +74,8 @@ export const FormLogin = () => {
             </Form>
         </section>
     );
+};
+
+FormLogin.propTypes = {
+    onLogin: PropTypes.func.isRequired,
 };
