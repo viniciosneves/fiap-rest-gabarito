@@ -2,12 +2,14 @@ import { useEffect, useState } from "react"
 import { Card, Form, Heading, Input, Label, Select } from "./styles"
 import { Button } from "../Button"
 import http from "../../http"
+import PropTypes from 'prop-types';
 
-export const TransactionForm = () => {
+export const TransactionForm = ({ onSubmit }) => {
 
     const [types, setTypes] = useState([])
-
     const [transactionType, setTransactionType] = useState('')
+    const [transactionValue, setSetTransactionValue] = useState('')
+    
     useEffect(() => {
         http.get('/transactions/types')
             .then(response => {
@@ -15,15 +17,27 @@ export const TransactionForm = () => {
             })
         
     }, [])
+
+    const createTransacion = (evt) => {
+        evt.preventDefault()
+        onSubmit({
+            value: parseFloat(transactionValue),
+            type: transactionType
+        })
+        setTransactionType('')
+        setSetTransactionValue('')
+    }
+
     return (
         <Card>
             <Heading>
                 Nova transação
             </Heading>
-            <Form>
+            <Form onSubmit={createTransacion}>
                 <Select     
                     value={transactionType} 
                     onChange={evt => setTransactionType(evt.target.value)}
+                    required
                 >
                     <option value="" disabled hidden>
                         Selecione o tipo de transação
@@ -34,7 +48,13 @@ export const TransactionForm = () => {
                     <Label>
                         Valor
                     </Label>
-                    <Input placeholder="00,00" type="number"/>
+                    <Input 
+                        placeholder="00,00" 
+                        type="number"
+                        value={transactionValue}
+                        onChange={evt => setSetTransactionValue(evt.target.value)}
+                        required
+                    />
                 </div>
                 <Button>
                     Concluir transação
@@ -43,3 +63,8 @@ export const TransactionForm = () => {
         </Card>
     )
 }
+
+
+TransactionForm.propTypes = {
+    onSubmit: PropTypes.func.isRequired,
+};

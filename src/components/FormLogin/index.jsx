@@ -25,6 +25,7 @@ export const FormLogin = ({ onLogin }) => {
             .then(response => {
                 console.log(response.data)
                 onLogin()
+                sessionStorage.setItem('token', response.data.accessToken)
             })
             .catch(err => {
                 console.error(err)
